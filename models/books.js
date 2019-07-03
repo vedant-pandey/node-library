@@ -9,14 +9,7 @@ const UserSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User'
         },
-        username: String
-     },
-    burrowedBy: { 
-        id:{
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        },
-        username: String
+        name: String
      }
 });
 
