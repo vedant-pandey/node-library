@@ -15,6 +15,7 @@ const passportLocalMongoose = require('passport-local-mongoose');
 const flash = require('connect-flash');
 const session = require('express-session');
 const User = require('./models/users');
+const Book = require('./models/books');
 
   //=============//
  // Connections //
@@ -66,25 +67,41 @@ app.get('/about', function(req, res){
 app.get('/contact', function(req,res){
     res.render('contact');
 });
-app.get('/login',function(req,res){
+app.get('/register',function(req,res){
+    res.render('register');
+});
+app.post('/register',function(req,res){
+    var newUser = new User({
+        name:req.body.name,
+        username: req.body.username
+    });
+    User.register(newUser,req.body.password,function(err,user){
+        if(err){
+            req.flash('error',err.message);
+            res.redirect('back');
+        }
+        passport.authenticate('local')(req, res, function(){
+            req.flash('success',"Welcome, " + user.name + ". You've succesfully logged in as," + user.whichUser);
+            res.redirect('/books');
+        });
+    });
+});
+app.get('/login', function(req, res){
     res.render('login');
 });
-app.post('/login',function(req,res){
-    var email = req.body.email;
-    var password = req.body.password;
-    console.log('this is email', email)
-    console.log('this is password', password)
-    var user = {
-        email: email,
-        password:password
-    }
-    db.collection('users').insertOne(user, function(err, result){
-        if (result){
-            console.log(result)
-        }
-        res.redirect('/')
-    })
-});
+app.post('/login', passport.authenticate('local',{
+    successRedirect: '/books',
+    failureRedirect: '/login',
+    failureFlash: true
+}),function(req, res){});
+app.get('/logout',function(req, res){
+    req.logout();
+    req.flash('success','You were successfully logged out!')
+    res.redirect('/');
+})
+app.get('*', function(req,res){
+    res.render('notfound');
+})
 
   //==========//
  // Listener //
