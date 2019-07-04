@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Node app</title>
+        <title>Node Library</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
     </head>
     <body>
 
@@ -22,5 +20,26 @@
                 <li><a href='/about'>About</a></li>
                 <li><a href='/contact'>Contact</a></li>
             </ul>
+            <ul class="nav navbar-nav navbar-right">
+			      <% if (!user) { %>
+			      	<li><a href="/register">Sign Up</a></li>
+			        <li><a href="/login">Login</a></li>
+			      <% } else { %>
+			      	<li><a href="#"><strong><%=user.name.toUpperCase()%></strong></a></li>
+			        <li><a href="/logout">Logout</a></li>
+			      <% } %>
+		      </ul>
         </div>
     </nav>
+    <div class="container">
+        <% if (error && error.length > 0) { -%>
+            <div class="alert alert-danger" role="alert">
+                <%= error %>
+            </div>
+        <% } -%>
+        <% if (success && success.length > 0) { -%>
+            <div class="alert alert-success" role="alert">
+                <%= success %>
+            </div>
+        <% } -%>
+    </div>

@@ -1,0 +1,37 @@
+<% include ../partials/header %>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////// -->
+
+
+<div class="container">
+	<header class="jumbotron">
+		<div class="container">
+			<h1>Welcome to Node Library!</h1>
+			<p>This section contains some of our hand picked books. Feel free to leave one yourself</p>
+			<p>
+				<a class="btn btn-primary btn-lg" href="/books/new">Add a new Book!!</a>
+			</p>
+		</div>
+	</header>
+
+	<div class="row text-center" style="display: flex; flex-wrap: wrap;">
+		<%books.forEach(function (book) {%>
+		<div class="col-md-3 col-sm-6">
+			<div class="thumbnail">
+				<img src="<%=book.image%>" >
+				<div class="caption">
+					<strong><%=book.name%></strong>
+				</div>
+				<div class="caption">
+					<em>by <%=book.author%></em>
+				</div>
+				<p>
+					<a href="/books/<%=book._id%>" class="btn btn-primary">More info</a>
+				</p>
+			</div>
+		</div>
+	<%})%>
+	</div>
+</div>
+
+<% include ../partials/footer %>

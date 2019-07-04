@@ -1,0 +1,29 @@
+<% include ../partials/header %>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////// -->
+
+       
+<div class="container">
+      <div class="col-md-9">
+        <div class="thumbnail">
+          <div class="caption-full">
+            <h4><a href="#"><%=book.name%></a></h4>
+            <p><em>
+              Written by - <strong><%= book.author.toUpperCase()%></strong>
+            </em></p>
+            <% if (user && book.author.id.equals(user._id)) { %>
+              <a class="btn btn-warning" id="edtbtn" href="/books/<%=book._id%>/edit">  Edit  </a>
+              <form class="delfrm" action="/books/<%=book._id%>?_method=delete" method="POST">
+                <button class="btn btn-danger" id="delbtn">Delete</button>
+              </form>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+</div>
+
+<% include ../partials/footer %>

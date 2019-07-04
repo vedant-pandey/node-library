@@ -2,22 +2,22 @@
  // Imports //
 //=========//
 
-const express = require('express');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-const app = express();
-// const mongodb = require('mongodb');
-// const MongoClient = mongodb.MongoClient;
-const passport = require('passport');
-const LocalStrategy = require('passport-local');
-const expressSanitizer = require('express-sanitizer');
-const passportLocalMongoose = require('passport-local-mongoose');
-const flash = require('connect-flash');
-const session = require('express-session');
-const methodOverride = require('method-override');
-const User = require('./models/users');
-const Book = require('./models/books');
-const middleware = require('./middleware');
+var express = require('express');
+var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+var app = express();
+// var mongodb = require('mongodb');
+// var MongoClient = mongodb.MongoClient;
+var passport = require('passport');
+var LocalStrategy = require('passport-local');
+var expressSanitizer = require('express-sanitizer');
+var passportLocalMongoose = require('passport-local-mongoose');
+var flash = require('connect-flash');
+var session = require('express-session');
+var methodOverride = require('method-override');
+var User = require('./models/users');
+var Book = require('./models/books');
+var middleware = require('./middleware');
 
   //=============//
  // Connections //
@@ -27,7 +27,8 @@ const middleware = require('./middleware');
 //     if (err) return console.log(err);
 //     db=client.db('library')
 // });
-mongoose.connect('mongodb://localhost/library', {useMongoClient:true})
+mongoose.connect('mongodb://localhost/library', {useNewUrlParser: true})
+mongoose.set('useCreateIndex', true);
 app.use(bodyParser.urlencoded({extended:true}));
 // app.use(express.static('public'));
 app.use(express.static(__dirname + '/public'));
@@ -172,16 +173,20 @@ app.get('/books/:id/edit', middleware.isLibrarian, function(req, res){
                 req.flash('error','Book not found');
                 return res.redirect('notfound');
             }
-            res.render('book/edit',{book:book});
+            res.render('books/edit',{book:book});
         }
     });
 });
 
-app.put('/:id', middleware.isLibrarian, function(req, res){
+app.put('/books/:id', middleware.isLibrarian, function(req, res){
     var newBook = req.body.book;
     newBook.name = req.body.name;
     newBook.author = req.body.author;
-    Book.findByIdAndUpdate(req.params.id, {$set: newData}, function(err, book){
+    newBook.issuedBy = {
+        id: req.user._id,
+        name: req.user.name
+    }
+    Book.findByIdAndUpdate(req.params.id, {$set: newBook}, function(err, book){
         if (err) {
             res.redirect("/books");
         } else {
@@ -192,10 +197,10 @@ app.put('/:id', middleware.isLibrarian, function(req, res){
             req.flash("success","Your Book was updated.");
             res.redirect("/books/"+req.params.id);
         }
-    })
+    });
 });
 
-app.delete(':/id', middleware.isLibrarian, function(req, res){
+app.delete('/books/:id', middleware.isLibrarian, function(req, res){
     Book.findOneAndRemove(req.params.id, function(err){
         if (err) {
             res.redirect("/books");
@@ -206,9 +211,104 @@ app.delete(':/id', middleware.isLibrarian, function(req, res){
     });
 });
 
+// Librarian routes
+
+app.get('/librarians', middleware.isAdmin, function(req,res){
+    User.find({whichUser:'librarian'},function(err, librarians){
+        if(err){
+            console.log('An error occured with your db');
+            console.log(err);
+        } else {
+            res.render('librarians/index',{librarians:librarians})
+        }
+    });
+});
+
+app.post('/librarians', middleware.isAdmin, function(req, res){
+    var newLibrarian = {
+        name:req.body.name,
+        username:req.body.username,
+        whichUser: 'librarian'
+    }
+    User.register(newLibrarian,req.body.password,function(err,user){
+        if(err){
+            req.flash('error',err.message);
+            res.redirect('back');
+        }
+        passport.authenticate('local')(req, res, function(){
+            req.flash('success',"Welcome, " + user.name + ". You've succesfully logged in as," + user.whichUser);
+            res.redirect('/librarians');
+        });
+    });
+});
+
+app.get('/librarians/new', middleware.isAdmin, function(req,res){
+    res.render('librarians/new');
+});
+
+app.get('/librarians/:id', middleware.isAdmin, function(req,res){
+    User.findById(req.params.id).populate('users').exec(function(err, user){
+        if (err){
+            console.log(err);
+            req.flash('error','Sorry, the requested user does not exist in this library');
+            res.redirect('/notfound');
+        } else {
+            if (!user){
+                req.flash('error', 'Requested user was not found.');
+                return res.redirect('/notfound');
+            }
+            res.render('librarians/show', {user:user});
+        }
+    });
+});
+
+app.get('/librarians/:id/edit', middleware.isAdmin, function(req, res){
+    User.findById(req.params.id).exec(function(err, user){
+        if (err) {
+            console.log(err);
+            req.flash('error', 'Sorry the requested user does not exist');
+            res.redirect('/notfound');
+        } else {
+            if(!user){
+                req.flash('error','User not found');
+                return res.redirect('notfound');
+            }
+            res.render('librarians/edit',{user:user});
+        }
+    });
+});
+
+app.put('/librarians/:id', middleware.isAdmin, function(req, res){
+    var newUser = req.body.user;
+    newUser.whichUser = req.body.whichUser;
+    User.findByIdAndUpdate(req.params.id, {$set: newUser}, function(err, user){
+        if (err) {
+            res.redirect("/librarians");
+        } else {
+            if (!user) {
+                    req.flash("error", "User not found.");
+                    return res.redirect("/notfound");
+                }
+            req.flash("success","Your User was updated.");
+            res.redirect("/librarians/"+req.params.id);
+        }
+    })
+});
+
+app.delete('/librarians/:id', middleware.isAdmin, function(req, res){
+    User.findOneAndRemove(req.params.id, function(err){
+        if (err) {
+            res.redirect("/librarians");
+        } else {
+            req.flash("success","Your user was removed.");
+            res.redirect("/librarians");
+        }
+    });
+});
+
 // Wildcard routes
 
-app.get('notfound',function(req, res){
+app.get('/notfound',function(req, res){
     res.render('notfound');
 });
 

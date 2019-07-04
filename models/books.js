@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const passportLocalMongoose = require('passport-local-mongoose');
 
-const UserSchema = new mongoose.Schema({
+const BookSchema = new mongoose.Schema({
     name: { type:String, required:true },
     author: { type:String, required:true },
     issuedBy: { 
@@ -13,6 +13,6 @@ const UserSchema = new mongoose.Schema({
      }
 });
 
-UserSchema.plugin(passportLocalMongoose);
+BookSchema.plugin(passportLocalMongoose);
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('Book', BookSchema);
