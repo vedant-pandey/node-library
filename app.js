@@ -55,7 +55,8 @@ passport.deserializeUser(User.deserializeUser());
 app.use(function(req, res, next){
     res.locals.user = req.user;
     res.locals.error = req.flash('error');
-    res.locals.success = req.flass('success');
+    res.locals.success = req.flash('success');
+    next();
 });
 
   //========//
@@ -88,7 +89,7 @@ app.post('/register',function(req,res){
             res.redirect('back');
         }
         passport.authenticate('local')(req, res, function(){
-            req.flash('success',"Welcome, " + user.name + ". You've succesfully logged in as," + user.whichUser);
+            req.flash('success',"Welcome, " + user.name + ". You've succesfully logged in as, " + user.whichUser);
             res.redirect('/books');
         });
     });
@@ -214,7 +215,8 @@ app.delete('/books/:id', middleware.isLibrarian, function(req, res){
 // Librarian routes
 
 app.get('/librarians', middleware.isAdmin, function(req,res){
-    User.find({whichUser:'librarian'},function(err, librarians){
+    console.log('here')
+    User.find({'whichUser':'librarian'},function(err, librarians){
         if(err){
             console.log('An error occured with your db');
             console.log(err);
@@ -230,13 +232,13 @@ app.post('/librarians', middleware.isAdmin, function(req, res){
         username:req.body.username,
         whichUser: 'librarian'
     }
-    User.register(newLibrarian,req.body.password,function(err,user){
+    User.register(newLibrarian,req.body.password,function(err,librarian){
         if(err){
             req.flash('error',err.message);
             res.redirect('back');
         }
         passport.authenticate('local')(req, res, function(){
-            req.flash('success',"Welcome, " + user.name + ". You've succesfully logged in as," + user.whichUser);
+            req.flash('success',"Welcome, " + librarian.name + ". You've succesfully logged in as," + librarian.whichUser);
             res.redirect('/librarians');
         });
     });
@@ -247,40 +249,40 @@ app.get('/librarians/new', middleware.isAdmin, function(req,res){
 });
 
 app.get('/librarians/:id', middleware.isAdmin, function(req,res){
-    User.findById(req.params.id).populate('users').exec(function(err, user){
+    User.findById(req.params.id).populate('users').exec(function(err, librarian){
         if (err){
             console.log(err);
             req.flash('error','Sorry, the requested user does not exist in this library');
-            res.redirect('/notfound');
+            res.status(404).redirect('/notfound');
         } else {
-            if (!user){
+            if (!librarian){
                 req.flash('error', 'Requested user was not found.');
-                return res.redirect('/notfound');
+                return res.status(404).redirect('/notfound');
             }
-            res.render('librarians/show', {user:user});
+            res.render('librarians/show', {librarian:librarian});
         }
     });
 });
 
 app.get('/librarians/:id/edit', middleware.isAdmin, function(req, res){
-    User.findById(req.params.id).exec(function(err, user){
+    User.findById(req.params.id).exec(function(err, librarian){
         if (err) {
             console.log(err);
             req.flash('error', 'Sorry the requested user does not exist');
             res.redirect('/notfound');
         } else {
-            if(!user){
+            if(!librarian){
                 req.flash('error','User not found');
                 return res.redirect('notfound');
             }
-            res.render('librarians/edit',{user:user});
+            res.render('librarians/edit',{librarian:librarian});
         }
     });
 });
 
 app.put('/librarians/:id', middleware.isAdmin, function(req, res){
-    var newUser = req.body.user;
-    newUser.whichUser = req.body.whichUser;
+    var newUser = req.body.librarian;
+    newUser.whichUser = 'librarian';
     User.findByIdAndUpdate(req.params.id, {$set: newUser}, function(err, user){
         if (err) {
             res.redirect("/librarians");

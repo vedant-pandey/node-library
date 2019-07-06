@@ -1,0 +1,27 @@
+<% include ../partials/header %>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////// -->
+
+       
+<div class="container">
+      <div class="col-md-9">
+        <div class="thumbnail">
+          <div class="caption-full">
+            <h4><a href="#"><%=librarian.name%></a></h4>
+            <p><em>
+              User name - <strong><%= librarian.username.toUpperCase()%></strong>
+            </em></p>
+              <a class="btn btn-warning" id="edtbtn" href="/librarians/<%=librarian._id%>/edit">  Edit  </a>
+              <form class="delfrm" action="/librarians/<%=librarian._id%>?_method=delete" method="POST">
+                <button class="btn btn-danger" id="delbtn">Delete</button>
+              </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+</div>
+
+<% include ../partials/footer %>

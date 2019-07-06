@@ -1,0 +1,26 @@
+<% include ../partials/header %>
+
+<div class="container">
+	<div class="row">
+		<h1 class="styledh1">Edit Librarian Info:- <%=librarian.name%></h1>
+
+		<div class="styledfrm">
+			<form action="/librarians/<%= librarian._id%>?_method=PUT" method="POST">
+				<div class="form-group">
+					<label for="name">Name</label>
+					<input class="form-control" type="text" name="librarian[name]" placeholder="Book Name" value="<%=librarian.name%>">
+				</div>
+				<div class="form-group">
+					<label for="author">Username</label>
+					<input class="form-control" type="text" name="librarian[username]" value="<%=librarian.username%>">
+				</div>
+				<div class="form-group">
+					<button class="btn btn-lg btn-primary btn-block">Submit!</button>
+				</div>
+			</form>
+			<a href="/librarians">Back</a>
+		</div>
+	</div>
+</div>
+
+<% include ../partials/footer %>

@@ -4,21 +4,24 @@
         <title>Node Library</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
     </head>
     <body>
 
     <nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a class="navbar-brand" href="#">
-                    Title
+                <a class="navbar-brand" href="/">
+                    Node Library
                 </a>
             </div>
             <ul class='nav navbar-nav'>
-                <li><a href='/'>Home</a></li>
-                <li><a href='/about'>About</a></li>
-                <li><a href='/contact'>Contact</a></li>
+                <% if (user) { %>
+                <li><a href='/books'>Books</a></li>
+                <% } %>
+                <% if(user && (user.whichUser=='admin')) { %>
+                <li><a href='/librarians'>Librarians</a></li>
+                <% } %>
             </ul>
             <ul class="nav navbar-nav navbar-right">
 			      <% if (!user) { %>

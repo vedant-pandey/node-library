@@ -1,0 +1,32 @@
+<% include ../partials/header %>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////// -->
+
+        
+<div class="container">
+	<div class="row">
+		<h1 class="styledh1">Add new librarian</h1>
+
+		<div class="styledfrm">
+			<form action="/librarians" method="POST">
+				<div class="form-group">
+					<label for="name">Name</label>
+					<input class="form-control" type="text" name="name" placeholder="Book Name">
+				</div>
+				<div class="form-group">
+					<label for="author">Username</label>
+					<input class="form-control" type="text" name="username">
+				</div>
+				<div class="form-group">
+					<label for="author">Password</label>
+					<input class="form-control" type="password" name="password">
+				</div>
+				<div class="form-group">
+					<button class="btn btn-lg btn-primary btn-block">Submit!</button>
+				</div>
+			</form>
+			<a href="/librarians">Back</a>
+		</div>
+	</div>
+</div>
+<% include ../partials/footer %>
