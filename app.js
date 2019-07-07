@@ -2,35 +2,27 @@
  // Imports //
 //=========//
 
-var express = require('express');
-var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
-var app = express();
-// var mongodb = require('mongodb');
-// var MongoClient = mongodb.MongoClient;
-var passport = require('passport');
-var LocalStrategy = require('passport-local');
-var expressSanitizer = require('express-sanitizer');
-var passportLocalMongoose = require('passport-local-mongoose');
-var flash = require('connect-flash');
-var session = require('express-session');
-var methodOverride = require('method-override');
-var User = require('./models/users');
-var Book = require('./models/books');
-var middleware = require('./middleware');
+const express = require('express');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+const app = express();
+const passport = require('passport');
+const LocalStrategy = require('passport-local');
+const expressSanitizer = require('express-sanitizer');
+const passportLocalMongoose = require('passport-local-mongoose');
+const flash = require('connect-flash');
+const session = require('express-session');
+const methodOverride = require('method-override');
+const User = require('./models/users');
+const Book = require('./models/books');
+const middleware = require('./middleware');
 
   //=============//
  // Connections //
 //=============//
 
-// MongoClient.connect('mongodb://localhost:27017',function(err,client){
-//     if (err) return console.log(err);
-//     db=client.db('library')
-// });
-mongoose.connect('mongodb://localhost/library', {useNewUrlParser: true})
-mongoose.set('useCreateIndex', true);
+mongoose.connect('mongodb://localhost/library', {useNewUrlParser: true,useCreateIndex:true,useFindAndModify:false})
 app.use(bodyParser.urlencoded({extended:true}));
-// app.use(express.static('public'));
 app.use(express.static(__dirname + '/public'));
 app.set("view engine", 'ejs');
 app.use(expressSanitizer());
@@ -65,12 +57,6 @@ app.use(function(req, res, next){
 
 app.get('/',function(req, res){
     res.render('home');
-});
-app.get('/about', function(req, res){
-    res.render('about');
-});
-app.get('/contact', function(req,res){
-    res.render('contact');
 });
 
 // User register routes

@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const passportLocalMongoose = require('passport-local-mongoose');
 
 const BookSchema = new mongoose.Schema({
     name: { type:String, required:true },
@@ -12,7 +11,5 @@ const BookSchema = new mongoose.Schema({
         name: String
      }
 });
-
-BookSchema.plugin(passportLocalMongoose);
 
 module.exports = mongoose.model('Book', BookSchema);

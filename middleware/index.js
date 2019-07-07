@@ -1,6 +1,5 @@
 var middlewareObj = {};
 var User = require('../models/users');
-var Book = require('../models/books');
 
 middlewareObj.isAdmin = function(req, res, next){
     if (req.isAuthenticated()){
