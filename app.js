@@ -28,7 +28,7 @@ const librarianRoutes = require('./routes/librarians');
 
 require('dotenv').config();
 const PORT = process.env.PORT||1234;
-const DBURL = process.env.DBURL;
+const DBURL = process.env.DBURL||'mongodb://localhost/library';
 
 
   //=============//
