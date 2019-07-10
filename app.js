@@ -20,11 +20,26 @@ const indexRoutes = require('./routes/index');
 const bookRoutes = require('./routes/books');
 const librarianRoutes = require('./routes/librarians');
 
+
+
+  //======================//
+ // Environment Variable //
+//======================//
+
+require('dotenv').config();
+const PORT = process.env.PORT||1234;
+const DBURL = process.env.DBURL;
+
+
   //=============//
  // Connections //
 //=============//
 
-mongoose.connect('mongodb://localhost/library', {useNewUrlParser: true,useCreateIndex:true,useFindAndModify:false})
+mongoose.connect(DBURL, {
+    useNewUrlParser: true, 
+    useCreateIndex:true, 
+    useFindAndModify:false
+});
 app.use(bodyParser.urlencoded({extended:true}));
 app.use(express.static(__dirname + '/public'));
 app.set("view engine", 'ejs');
@@ -67,11 +82,13 @@ app.use('/books',bookRoutes);
 
 app.use('/librarians',librarianRoutes);
 
-router.get('/notfound',function(req, res){
+//Wildcard Routes
+
+app.get('/notfound',function(req, res){
     res.render('notfound');
 });
 
-router.get('*', function(req,res){
+app.get('*', function(req,res){
     res.redirect('/notfound');
 });
 
@@ -79,8 +96,8 @@ router.get('*', function(req,res){
  // Listener //
 //==========//
 
-app.listen(1234, function(){
-    console.log(`Server running ${1234}`);
+app.listen(PORT, function(){
+    console.log(`Server running ${PORT}`);
 });
 process.on('SIGINT',function(){
     console.log('\nClosing server');
